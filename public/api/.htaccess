@@ -1,0 +1,29 @@
+# GIPT PHP 8+ REST API — Front Controller Routing & Internal File Protection
+Options -Indexes -MultiViews
+
+# Protect configuration, database, auth, seed, and local fallback files from direct HTTP access
+<FilesMatch "^(config\.php|config\.example\.php|db\.php|auth\.php|seed\.php|helpers\.php)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Block direct access to local fallback data directory
+  RewriteRule ^\.data(/.*)?$ - [F,L]
+
+  # Forward Authorization header to PHP under cPanel FastCGI / FPM
+  RewriteCond %{HTTP:Authorization} ^(.*)
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+  # Route all /api/* requests to the single front controller index.php
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

@@ -44,7 +44,7 @@ export async function uploadAdminFile(file: File): Promise<{
 }> {
   const form = new FormData();
   form.append('file', file);
-  return apiFetch('/api/admin/upload', {
+  return apiFetch('/api/upload', {
     method: 'POST',
     body: form,
   });

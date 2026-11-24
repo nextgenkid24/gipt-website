@@ -1,0 +1,32 @@
+# GIPT Institutional Website & CMS — Root Apache / cPanel Configuration
+# Enables React Router SPA client-side routing while letting /api/* and /uploads/* pass through.
+
+Options -Indexes -MultiViews
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Pass Authorization header through to PHP on cPanel / FastCGI / CGI setups
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+  # Do not rewrite API requests — handled directly by /api/.htaccess -> /api/index.php
+  RewriteRule ^api(/.*)?$ - [L]
+
+  # Do not rewrite uploaded media files
+  RewriteRule ^uploads(/.*)?$ - [L]
+
+  # Serve existing static files and directories directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Fallback all other routes (e.g., /insights/my-post, /programs, /admin) to React SPA
+  RewriteRule ^ index.html [L]
+</IfModule>

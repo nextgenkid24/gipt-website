@@ -389,7 +389,7 @@ async function startServer() {
   });
 
   // File upload (for post cover images, logos, and PDF publications)
-  app.post('/api/admin/upload', requireAuth, (req: AuthenticatedRequest, res: Response) => {
+  const handleFileUpload = (req: AuthenticatedRequest, res: Response) => {
     upload.single('file')(req, res, (err: unknown) => {
       if (err) {
         const msg = err instanceof Error ? err.message : 'Upload failed.';
@@ -410,7 +410,10 @@ async function startServer() {
         mimetype: req.file.mimetype,
       });
     });
-  });
+  };
+
+  app.post('/api/upload', requireAuth, handleFileUpload);
+  app.post('/api/admin/upload', requireAuth, handleFileUpload);
 
   // Self profile update (Super Admin & Author)
   app.put('/api/admin/profile', requireAuth, async (req: AuthenticatedRequest, res) => {
