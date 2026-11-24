@@ -1,0 +1,673 @@
+import type {
+  Category,
+  Inquiry,
+  Program,
+  Resource,
+  SiteSettings,
+  Subscriber,
+} from '../src/types';
+
+export const SEED_IMAGES = {
+  heroCampus: '/src/assets/images/hero_campus_academic_1795549124827.jpg',
+  heroForum: '/src/assets/images/hero_executive_forum_1795549122561.jpg',
+  policyResearch: '/src/assets/images/article_policy_research_1795549127355.jpg',
+  digitalInnovation: '/src/assets/images/article_digital_innovation_1795549123498.jpg',
+  governanceSummit: '/src/assets/images/article_governance_summit_1795549122950.jpg',
+  officialCalendar: '/assets/aistudio/780380845_122121298275364872_39160538878929447_n_dbb6fffe.jpg',
+  officialLogo: '/assets/aistudio/1_8b905cc5.png',
+};
+
+export const OFFICIAL_REGISTRATION_URL = 'https://forms.gle/KeiwAs1AVPgrLFS3A';
+
+export const INITIAL_CATEGORIES: Omit<Category, 'id' | 'created_at'>[] = [
+  {
+    name: 'Research Mentorship',
+    slug: 'research-mentorship',
+    description: 'Insights, supervision guides, and scholarly milestones from GIPT’s Flagship Research Mentorship Programme.',
+  },
+  {
+    name: 'Research Methods',
+    slug: 'research-methods',
+    description: 'Practical guides on proposal writing, Stata, NVivo, Excel analytics, and qualitative/quantitative designs.',
+  },
+  {
+    name: '4IR Skills & Technology',
+    slug: '4ir-skills',
+    description: 'Briefs on artificial intelligence, data science, automation, and 4th Industrial Revolution capability building.',
+  },
+  {
+    name: 'Free Info Sessions & Events',
+    slug: 'workshops-events',
+    description: 'Open, complimentary information sessions on research and technology, colloquia, and calendar updates.',
+  },
+  {
+    name: 'Institutional News',
+    slug: 'institutional-news',
+    description: 'Official cohort announcements, academic calendar releases, and strategic roadmap updates.',
+  },
+];
+
+// Active offerings:
+// 1) Flagship Research Mentorship Programme
+// 2) Research Methods Short Courses (August – September Academic Calendar: 11 scheduled courses)
+// 3) 4th Industrial Revolution (4IR) Skills Short Courses
+// 4) Free Information Sessions on Research & Technology
+// Undergraduate & Postgraduate degree programmes are not yet offered.
+export const INITIAL_PROGRAMS: Omit<Program, 'id' | 'created_at'>[] = [
+  // ==================== FLAGSHIP RESEARCH MENTORSHIP ====================
+  {
+    title: 'GIPT Research Mentorship Programme (Flagship)',
+    slug: 'gipt-research-mentorship-programme-flagship',
+    level: 'short_course',
+    faculty: 'Flagship · Research Mentorship Programme',
+    duration: 'Structured Mentored Cohort (Flexible Milestones)',
+    study_mode: 'Online & Blended Mentorship',
+    entry_requirements: 'Enrolment open to undergraduate/postgraduate students, thesis & dissertation writers, early-career academics, and policy researchers seeking structured end-to-end mentorship.',
+    summary: 'GIPT’s flagship programme where enrolled students are paired with experienced research mentors across every aspect of research—from topic refinement and literature synthesis to proposal writing, data analysis, thesis completion, and journal publication.',
+    highlights: 'Dedicated one-on-one and small-cohort mentorship across all stages of the research lifecycle\nGuided support on problem framing, methodology design, ethical clearance, and instrument validation\nHands-on coaching in quantitative (Stata, Excel, R), qualitative (NVivo), and mixed-methods analysis\nManuscript review, thesis defense preparation, and publication targeting with senior fellows',
+    intake: 'Rolling Enrolment · Cohort Intakes Throughout the Year',
+    featured: true,
+  },
+
+  // ==================== AUGUST – SEPTEMBER RESEARCH METHODS SHORT COURSES ====================
+  {
+    title: 'Foundation of Research',
+    slug: 'foundation-of-research',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:30 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Open to postgraduate candidates, scholars, practitioners, and beginners building a solid grounding in scientific inquiry.',
+    summary: 'Establishes core philosophical, ethical, and methodological foundations of rigorous research—covering problem identification, research objectives, hypotheses, and conceptual frameworks.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:30 pm – 8:30 pm)\nFormulating clear research problems, questions, objectives, and theoretical frameworks\nUnderstanding research paradigms, validity, reliability, and ethical governance',
+    intake: '17 – 21 August (Online)',
+    featured: true,
+  },
+  {
+    title: 'Information Retrieval and Referencing',
+    slug: 'information-retrieval-and-referencing',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:00 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Ideal for students, researchers, and academics preparing literature reviews, theses, or publishable manuscripts.',
+    summary: 'Practical training in systematic academic database searching, critical source appraisal, plagiarism avoidance, and automated citation workflows using modern reference managers.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:00 pm – 8:30 pm)\nStructured Boolean search strategies across peer-reviewed journals and scholarly repositories\nHands-on reference management, citation styles (APA, Harvard, Vancouver), and academic integrity',
+    intake: '24 – 28 August (Online)',
+    featured: false,
+  },
+  {
+    title: 'Research Proposal Writing',
+    slug: 'research-proposal-writing',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:30 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Designed for postgraduate students, grant applicants, and researchers preparing formal academic or institutional proposals.',
+    summary: 'Step-by-step intensive workshop guiding participants to draft a persuasive, committee-ready research proposal complete with aligned methodology, workplan, and ethical considerations.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:30 pm – 8:30 pm)\nStructuring compelling backgrounds, problem statements, literature syntheses, and methodology chapters\nPractical proposal critique clinics, budgeting, timelines, and ethical review readiness',
+    intake: '31 August – 4 September (Online)',
+    featured: true,
+  },
+  {
+    title: 'Quantitative Research Designs',
+    slug: 'quantitative-research-designs',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:30 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Suitable for researchers, M&E specialists, and postgraduate students designing empirical quantitative studies.',
+    summary: 'Covers experimental, quasi-experimental, longitudinal, and cross-sectional quantitative designs alongside probability sampling, sample-size determination, and bias control.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:30 pm – 8:30 pm)\nSelecting appropriate observational, quasi-experimental, and experimental research architectures\nPower analysis, sampling strategies, variable operationalization, and internal/external validity',
+    intake: '7 – 11 September (Online)',
+    featured: false,
+  },
+  {
+    title: 'Qualitative Research Designs',
+    slug: 'qualitative-research-designs',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:30 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Built for social science, health, education, and policy researchers conducting in-depth qualitative inquiry.',
+    summary: 'Explores phenomenology, grounded theory, case study, ethnography, and narrative designs with emphasis on purposive sampling, reflexivity, and trustworthiness criteria.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:30 pm – 8:30 pm)\nAligning research questions with case study, phenomenology, grounded theory, and ethnographic designs\nEstablishing credibility, transferability, dependability, and confirmability in qualitative protocols',
+    intake: '7 – 11 September (Online)',
+    featured: false,
+  },
+  {
+    title: 'Quantitative Data Collection Methods and Data Management Tools',
+    slug: 'quantitative-data-collection-and-data-management-tools',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:30 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Open to field coordinators, M&E practitioners, postgraduate researchers, and survey managers.',
+    summary: 'Hands-on course on structured questionnaire construction, electronic data capture tools, quality-assurance checks, data cleaning protocols, and secure dataset management.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:30 pm – 8:30 pm)\nInstrument design, pilot testing, and digital survey deployment for clean field data capture\nData dictionaries, validation rules, cleaning pipelines, and secure version-controlled storage',
+    intake: '14 – 18 September (Online)',
+    featured: false,
+  },
+  {
+    title: 'Qualitative Data Collection Methods and Management',
+    slug: 'qualitative-data-collection-methods-and-management',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:30 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Geared toward field researchers, project evaluators, and scholars collecting interview or focus-group evidence.',
+    summary: 'Develops practical proficiency in conducting in-depth interviews, focus group discussions, field observations, verbatim transcription, anonymization, and qualitative data archiving.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:30 pm – 8:30 pm)\nCrafting semi-structured interview guides, probing techniques, and focus-group moderation skills\nSystematic transcription standards, participant confidentiality, and audit-ready file organization',
+    intake: '14 – 18 September (Online)',
+    featured: false,
+  },
+  {
+    title: 'Quantitative Data Analysis and Visualisation Using Stata',
+    slug: 'quantitative-data-analysis-and-visualisation-using-stata',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 8:00 am – 4:00 pm',
+    study_mode: 'Physical (Blantyre)',
+    entry_requirements: 'Fee: MK550,000 (Physical — Blantyre). Recommended for researchers, economists, public health analysts, and postgraduate students bringing laptops.',
+    summary: 'Full-day physical intensive workshop in Blantyre teaching reproducible Stata do-file workflows, descriptive and inferential statistics, regression modeling, and publication-grade graphs.',
+    highlights: 'Fee: MK550,000 (Physical in Blantyre, 8:00 am – 4:00 pm full-day intensive)\nReproducible data wrangling, hypothesis testing, linear/logistic regression, and diagnostics in Stata\nCreating publication-ready tables and custom statistical visualisations from real datasets',
+    intake: '21 – 25 September · Physical (Blantyre)',
+    featured: true,
+  },
+  {
+    title: 'Qualitative Data Analysis Principles Using NVivo Software',
+    slug: 'qualitative-data-analysis-principles-using-nvivo',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 8:00 am – 4:00 pm',
+    study_mode: 'Physical (Blantyre)',
+    entry_requirements: 'Fee: MK550,000 (Physical — Blantyre). Ideal for qualitative scholars, NGO evaluators, and postgraduate researchers analyzing textual or multimedia transcripts.',
+    summary: 'Full-day hands-on workshop in Blantyre mastering thematic coding, framework matrices, case classifications, query visualizations, and transparent qualitative synthesis in NVivo.',
+    highlights: 'Fee: MK550,000 (Physical in Blantyre, 8:00 am – 4:00 pm full-day intensive)\nImporting transcripts, building structured coding trees, memo writing, and inter-coder consistency\nRunning text search, matrix coding queries, and visual theme maps in NVivo software',
+    intake: '21 – 25 September · Physical (Blantyre)',
+    featured: true,
+  },
+  {
+    title: 'Quantitative Data Analysis and Visualisation Using Excel',
+    slug: 'quantitative-data-analysis-and-visualisation-using-excel',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 8:00 am – 4:00 pm',
+    study_mode: 'Physical (Lilongwe)',
+    entry_requirements: 'Fee: MK550,000 (Physical — Lilongwe). Tailored for analysts, researchers, managers, and scholars seeking rigorous statistical workflows inside Microsoft Excel.',
+    summary: 'Full-day physical intensive workshop in Lilongwe covering structured dataset cleaning, PivotTables, Excel Data Analysis ToolPak, statistical testing, and executive visual dashboards.',
+    highlights: 'Fee: MK550,000 (Physical in Lilongwe, 8:00 am – 4:00 pm full-day intensive)\nAutomated cleaning formulas, PivotTables, descriptive summaries, ANOVA, and regression in Excel\nDesigning clean analytical charts and decision-ready visual dashboards for reports and theses',
+    intake: '28 September – 2 October · Physical (Lilongwe)',
+    featured: false,
+  },
+  {
+    title: 'Mixed Methods Research Designs',
+    slug: 'mixed-methods-research-designs',
+    level: 'short_course',
+    faculty: 'Research Methods Short Courses',
+    duration: '5 Days · 6:30 pm – 8:30 pm',
+    study_mode: 'Online',
+    entry_requirements: 'Fee: MK85,000 (Online). Designed for postgraduate scholars, evaluators, and researchers integrating quantitative and qualitative evidence.',
+    summary: 'Equips participants to design convergent, explanatory sequential, and exploratory sequential mixed-methods studies with rigorous joint displays and integrated meta-inferences.',
+    highlights: 'Fee: MK85,000 (Online evening sessions, 6:30 pm – 8:30 pm)\nDesigning convergent, explanatory sequential, and exploratory sequential mixed-methods frameworks\nPractical strategies for data integration, triangulation, joint displays, and reporting standards',
+    intake: '28 September – 2 October (Online)',
+    featured: false,
+  },
+
+  // ==================== 4IR SKILLS SHORT COURSES ====================
+  {
+    title: 'Applied Data Science, Machine Learning & Predictive Analytics',
+    slug: 'applied-data-science-machine-learning-analytics',
+    level: 'short_course',
+    faculty: '4th Industrial Revolution (4IR) Skills Academy',
+    duration: '6 Weeks (Executive Intensive)',
+    study_mode: 'Online, Blended',
+    entry_requirements: 'Open to graduates, analysts, researchers, and professionals with foundational numeracy or spreadsheet experience.',
+    summary: 'Hands-on 4IR short course equipping participants with Python data pipelines, supervised and unsupervised machine learning, and ethical deployment of analytics in public and corporate institutions.',
+    highlights: 'End-to-end data wrangling, visualization, and modeling in Python\nApplied machine learning laboratories using African economic, health, and enterprise datasets\nSupervised capstone analytics project reviewed by industry practitioners',
+    intake: 'Quarterly Cohorts (Feb, May, Aug, Nov)',
+    featured: true,
+  },
+  {
+    title: 'Artificial Intelligence Literacy, Prompt Engineering & Workflow Automation',
+    slug: 'ai-literacy-workflow-automation-professionals',
+    level: 'short_course',
+    faculty: '4th Industrial Revolution (4IR) Skills Academy',
+    duration: '4 Weeks (Modular Cohort)',
+    study_mode: 'Online, Blended',
+    entry_requirements: 'Designed for researchers, managers, educators, and administrative professionals across public and private sectors.',
+    summary: 'Practical 4IR training demystifying generative AI, intelligent process automation, institutional data privacy, and responsible AI governance for everyday research and workplace productivity.',
+    highlights: 'Designing reliable AI-assisted research, reporting, and operational workflows\nRisk assessment, copyright, data protection, and institutional AI policy frameworks\nLive workplace automation lab tailored to each participant’s department',
+    intake: 'Monthly Rolling Cohorts',
+    featured: true,
+  },
+  {
+    title: 'Cloud Infrastructure, Cybersecurity & Digital Resilience Essentials',
+    slug: 'cloud-infrastructure-cybersecurity-resilience',
+    level: 'short_course',
+    faculty: '4th Industrial Revolution (4IR) Skills Academy',
+    duration: '6 Weeks (Applied Lab Track)',
+    study_mode: 'Online, Blended',
+    entry_requirements: 'Suitable for IT officers, systems administrators, technical graduates, and institutional operations leads.',
+    summary: 'Intensive 4IR technical short course covering modern cloud architecture, zero-trust security hygiene, threat detection, and digital continuity for public registries and growing enterprises.',
+    highlights: 'Hands-on cloud deployment, identity access controls, and network hardening\nIncident response tabletop exercises and vulnerability auditing checklists\nAlignment with international ISO 27001 and regional data protection standards',
+    intake: 'March, July & October',
+    featured: false,
+  },
+  {
+    title: 'Internet of Things (IoT), Smart Systems & Industry 4.0 Foundations',
+    slug: 'iot-smart-systems-industry-4-foundations',
+    level: 'short_course',
+    faculty: '4th Industrial Revolution (4IR) Skills Academy',
+    duration: '5 Weeks (Practical Cohort)',
+    study_mode: 'Blended',
+    entry_requirements: 'Open to engineering, agriculture, logistics, and ICT professionals seeking applied Industry 4.0 skills.',
+    summary: 'Explores connected sensor ecosystems, edge telemetry, smart agriculture, and supply-chain digitalization tailored to Southern African infrastructure realities.',
+    highlights: 'Sensor prototyping, telemetry dashboards, and low-bandwidth connectivity design\nCase clinics in precision agriculture, energy metering, and municipal water monitoring\nFeasibility blueprint for deploying smart-systems pilots inside organizations',
+    intake: 'April & September',
+    featured: false,
+  },
+
+  // ==================== FREE INFORMATION SESSIONS (RESEARCH & TECHNOLOGY) ====================
+  {
+    title: 'Free Information Session: Research Pathways, Mentorship & Publishing Excellence',
+    slug: 'free-info-session-research-mentorship-publishing',
+    level: 'short_course',
+    faculty: 'Free Information Sessions (Research & Technology)',
+    duration: '90 Minutes · Live Q&A',
+    study_mode: 'Online (Free Open Session)',
+    entry_requirements: 'Fee: FREE (Open Access). Open to all students, researchers, lecturers, and professionals—no prerequisites required.',
+    summary: 'Complimentary interactive session unpacking common research roadblocks, how to choose the right research design or software (Stata, NVivo, Excel), and how GIPT’s Flagship Research Mentorship Programme supports scholars.',
+    highlights: '100% Free to attend with live mentor Q&A and open resource takeaways\nGuidance on selecting between quantitative, qualitative, and mixed-methods designs\nWalkthrough of enrolment pathways for the Flagship Research Mentorship Programme',
+    intake: 'Bi-Weekly Free Online Sessions (RSVP Open)',
+    featured: true,
+  },
+  {
+    title: 'Free Information Session: Emerging 4IR Technologies & AI in Modern Research',
+    slug: 'free-info-session-4ir-technologies-ai-research',
+    level: 'short_course',
+    faculty: 'Free Information Sessions (Research & Technology)',
+    duration: '90 Minutes · Live Demo & Q&A',
+    study_mode: 'Online (Free Open Session)',
+    entry_requirements: 'Fee: FREE (Open Access). Open to students, institutional staff, and technology enthusiasts exploring practical 4IR and research tools.',
+    summary: 'Free open briefing examining ethical AI tools for literature mapping, data science workflows, digital productivity, and high-demand 4th Industrial Revolution skills across Southern Africa.',
+    highlights: '100% Free registration covering practical technology and research innovation topics\nLive demonstrations of responsible AI workflows, data analytics, and open research tools\nInteractive Q&A with GIPT’s 4IR Academy and Research Mentorship facilitators',
+    intake: 'Monthly Free Online Sessions (RSVP Open)',
+    featured: false,
+  },
+];
+
+export const INITIAL_POSTS: Array<{
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  cover_image: string;
+  category_slug: string;
+  author_email: string;
+  tags: string;
+  featured: boolean;
+  status: 'published' | 'draft';
+  published_at: string;
+}> = [
+  {
+    title: 'August – September Research Methods Short Courses Calendar Now Open for Registration',
+    slug: 'august-september-research-methods-short-courses-calendar',
+    excerpt: 'Eleven practical five-day courses covering Foundation of Research, Proposal Writing, Quantitative & Qualitative Designs, Stata, NVivo, Excel, and Mixed Methods—delivered Online and in Blantyre & Lilongwe.',
+    content: `## Registration Open for the August – September Short Courses Calendar
+
+The **Global Institute For Postgraduate Training (GIPT)** has published its August – September schedule of eleven intensive **Research Methods Short Courses**, engineered for postgraduate scholars, researchers, monitoring & evaluation officers, and working professionals.
+
+### August Schedule (Online Evening Sessions)
+
+- **17 – 21 August:** Foundation of Research (*Online, 6:30 pm – 8:30 pm*)
+- **24 – 28 August:** Information Retrieval and Referencing (*Online, 6:00 pm – 8:30 pm*)
+- **31 August – 4 September:** Research Proposal Writing (*Online, 6:30 pm – 8:30 pm*)
+
+### September & Early October Schedule (Online & Physical Intensives)
+
+- **7 – 11 September:** Quantitative Research Designs & Qualitative Research Designs (*Online, 6:30 pm – 8:30 pm*)
+- **14 – 18 September:** Quantitative Data Collection Methods and Data Management Tools & Qualitative Data Collection Methods and Management (*Online, 6:30 pm – 8:30 pm*)
+- **21 – 25 September:** Quantitative Data Analysis and Visualisation Using Stata & Qualitative Data Analysis Principles Using NVivo Software (*Physical in Blantyre, 8:00 am – 4:00 pm*)
+- **28 September – 2 October:** Quantitative Data Analysis and Visualisation Using Excel (*Physical in Lilongwe, 8:00 am – 4:00 pm*)
+- **28 September – 2 October:** Mixed Methods Research Designs (*Online, 6:30 pm – 8:30 pm*)
+
+> Tuition fees are **MK85,000** for Online courses and **MK550,000** for Physical full-day workshops in Blantyre and Lilongwe.
+
+### How to Register
+
+Participants can register directly via our [Official Registration Form](https://forms.gle/KeiwAs1AVPgrLFS3A), email **info@gipt.edu.mw**, or call/WhatsApp **+265 885 921 221**.`,
+    cover_image: SEED_IMAGES.policyResearch,
+    category_slug: 'research-methods',
+    author_email: 'admin@gipt.edu.mw',
+    tags: 'Research Methods, Academic Calendar, Stata, NVivo, Excel, Short Courses',
+    featured: true,
+    status: 'published',
+    published_at: '2026-08-03T09:00:00.000Z',
+  },
+  {
+    title: 'Inside GIPT’s Flagship Research Mentorship Programme: Guided Supervision Across Every Aspect of Research',
+    slug: 'gipt-flagship-research-mentorship-programme',
+    excerpt: 'How enrolled students receive dedicated, structured mentorship spanning problem framing, methodology, statistical and qualitative analysis, dissertation writing, and publication.',
+    content: `## Moving Scholars From Concept to Confident Completion
+
+Many capable students and early-career researchers stall between an initial research idea and a defensible thesis, dissertation, or journal manuscript. Short workshops build key technical skills, but sustained progress requires ongoing, accountable supervision.
+
+GIPT’s **Flagship Research Mentorship Programme** pairs enrolled students directly with experienced academic mentors across every stage of their research journey.
+
+### What Enrolled Mentees Receive
+
+1. **Topic Sharpening & Literature Mastery:** Refining research questions, search strategies, and conceptual frameworks so every study starts on firm ground.
+2. **Methodological Precision:** Personalized mentoring across quantitative, qualitative, and mixed-methods designs, sampling, and ethical review submissions.
+3. **Applied Data Analysis Coaching:** Direct support applying Stata, NVivo, Excel, or R to the mentee’s own datasets and transcripts.
+4. **Academic Writing & Publication Readiness:** Iterative manuscript review, thesis defense preparation, and journal submission strategy.
+
+> Great research is rarely written in isolation—it thrives through disciplined methodological dialogue and accountable mentorship.
+
+Enrol in the Flagship Research Mentorship Programme through our Programs page or attend one of our upcoming **Free Information Sessions** to meet our mentors.`,
+    cover_image: SEED_IMAGES.heroCampus,
+    category_slug: 'research-mentorship',
+    author_email: 'editor@gipt.edu.mw',
+    tags: 'Research Mentorship, Flagship Programme, Thesis Supervision, Publication',
+    featured: true,
+    status: 'published',
+    published_at: '2026-07-28T08:30:00.000Z',
+  },
+  {
+    title: 'Join Our Free Information Sessions on Research & Emerging Technology',
+    slug: 'free-information-sessions-research-and-technology',
+    excerpt: 'GIPT hosts complimentary open webinars on diverse research methodology and 4IR technology subjects—giving students and professionals direct access to our mentors at zero cost.',
+    content: `## Open Access Knowledge for Scholars and Professionals
+
+Alongside our scheduled Research Methods short courses, 4IR Skills trainings, and Flagship Research Mentorship Programme, GIPT regularly hosts **Free Information Sessions** covering timely topics across research and modern technology.
+
+### Featured Session Themes
+
+- **Research Design & Academic Publishing:** Selecting quantitative, qualitative, or mixed-methods approaches, navigating ethics review, and avoiding common thesis pitfalls.
+- **Software & Analytical Tooling:** Practical orientation to Stata, NVivo, Excel, and reproducible data workflows.
+- **4IR & AI in Modern Research:** Responsible use of artificial intelligence, data science workflows, and digital productivity tools for scholars and institutional teams.
+
+All Free Information Sessions include live Q&A with GIPT facilitators and are completely free to attend. Reserve your seat via our Contact page or subscribe to our alerts strip below the hero banner.`,
+    cover_image: SEED_IMAGES.governanceSummit,
+    category_slug: 'workshops-events',
+    author_email: 'admin@gipt.edu.mw',
+    tags: 'Free Info Sessions, Research, Technology, Webinars, Open Access',
+    featured: false,
+    status: 'published',
+    published_at: '2026-07-20T10:00:00.000Z',
+  },
+  {
+    title: 'Closing the 4th Industrial Revolution Skills Gap Across Southern African Institutions',
+    slug: 'closing-4ir-skills-gap-southern-african-institutions',
+    excerpt: 'Why practical short-course cohorts in data science, responsible AI, cloud security, and IoT build faster institutional capability than theoretical workshops.',
+    content: `## Practical 4IR Capability for Modern Teams
+
+Across Southern Africa, public institutions, financial firms, and emerging enterprises are modernizing operations rapidly. Through the **GIPT 4th Industrial Revolution (4IR) Skills Academy**, our short-course cohorts focus on measurable operational competence—bridging foundational digital concepts and immediate workplace execution.
+
+### Core Principles of GIPT’s 4IR Short Courses
+
+- **Live Institutional Datasets:** Participants analyze authentic regional economic, health, and enterprise datasets rather than toy textbook examples.
+- **Responsible AI & Data Governance:** Every AI and analytics module embeds privacy compliance, bias auditing, and transparent decision oversight.
+- **Workplace Capstone Blueprint:** Trainees graduate with an applied diagnostic or automation prototype ready for deployment inside their own organization.`,
+    cover_image: SEED_IMAGES.digitalInnovation,
+    category_slug: '4ir-skills',
+    author_email: 'admin@gipt.edu.mw',
+    tags: '4IR Skills, Data Science, AI Literacy, Short Courses',
+    featured: false,
+    status: 'published',
+    published_at: '2026-07-14T09:00:00.000Z',
+  },
+  {
+    title: 'Institutional Roadmap: Active Short Courses, Mentorship & Preparation for Future Degrees',
+    slug: 'institutional-roadmap-short-courses-and-future-degrees',
+    excerpt: 'An official update detailing GIPT’s current focus on Research Mentorship, Research Methods & 4IR short courses, and Free Info Sessions while future degrees remain in development.',
+    content: `## Transparent Academic Rollout
+
+At this stage of our institutional growth, **GIPT actively offers**:
+
+- **Flagship Research Mentorship Programme:** Enrolment-based comprehensive research mentorship for students and scholars.
+- **Research Methods Short Courses:** Scheduled 5-day Online (MK85,000) and Physical Blantyre/Lilongwe (MK550,000) courses spanning foundational inquiry through Stata, NVivo, Excel, and mixed methods.
+- **4th Industrial Revolution (4IR) Skills Short Courses:** Practical trainings in Data Science, AI Automation, Cloud & Cybersecurity, and IoT.
+- **Free Information Sessions:** Complimentary open sessions on research and technology topics.
+
+### Status of Undergraduate and Postgraduate Degree Programmes
+
+Full Undergraduate and Postgraduate degree programmes are **not yet being offered**. Prospective degree students are welcome to register early interest via our Contact page to be notified as soon as formal degree intakes open.`,
+    cover_image: SEED_IMAGES.heroForum,
+    category_slug: 'institutional-news',
+    author_email: 'admin@gipt.edu.mw',
+    tags: 'Institutional Roadmap, Short Courses, Mentorship, Notice',
+    featured: false,
+    status: 'published',
+    published_at: '2026-07-05T11:00:00.000Z',
+  },
+  {
+    title: 'Choosing Between Stata, NVivo, and Excel for Your Research Analysis',
+    slug: 'choosing-between-stata-nvivo-and-excel-for-research',
+    excerpt: 'A practical orientation from GIPT’s quantitative and qualitative workshop leads ahead of our September physical intensive clinics in Blantyre and Lilongwe.',
+    content: `## Matching the Right Analytical Tool to Your Study Design
+
+Selecting the right analysis software early saves weeks of rework during thesis or evaluation write-ups. Ahead of GIPT’s September physical intensives in **Blantyre** and **Lilongwe**, here is how each tool fits into modern empirical research:
+
+1. **Stata (Blantyre, 21 – 25 Sept):** Ideal for econometric modeling, public health biostatistics, survey weighting, and fully reproducible do-file analysis.
+2. **NVivo (Blantyre, 21 – 25 Sept):** Purpose-built for thematic coding of interviews, focus group transcripts, policy documents, and qualitative matrix queries.
+3. **Excel (Lilongwe, 28 Sept – 2 Oct):** Widely accessible across ministries and NGOs for structured cleaning, PivotTables, ToolPak statistical tests, and executive visual dashboards.
+
+All three physical intensives run **8:00 am – 4:00 pm** at **MK550,000** and include hands-on guided datasets.`,
+    cover_image: SEED_IMAGES.policyResearch,
+    category_slug: 'research-methods',
+    author_email: 'editor@gipt.edu.mw',
+    tags: 'Stata, NVivo, Excel, Blantyre, Lilongwe, Data Analysis',
+    featured: false,
+    status: 'published',
+    published_at: '2026-06-28T09:15:00.000Z',
+  },
+];
+
+export const INITIAL_RESOURCES: Omit<Resource, 'id' | 'created_at'>[] = [
+  {
+    title: 'Official GIPT Research Methods Short Courses Calendar (August – September)',
+    category: 'Academic Calendar',
+    summary: 'Official schedule of all 11 August–September Research Methods short courses (Online MK85,000 · Physical Blantyre & Lilongwe MK550,000) with session times and registration details.',
+    file_url: SEED_IMAGES.officialCalendar,
+    publication_year: '2026',
+    file_size: 'Official Poster JPG',
+  },
+  {
+    title: 'Flagship Research Mentorship Programme — Enrolment & Mentee Guide',
+    category: 'Academic Guide',
+    summary: 'Complete overview of how enrolled students are paired with mentors across research design, proposal writing, data analysis, thesis completion, and journal publishing.',
+    file_url: '/api/resources/2/download',
+    publication_year: '2026',
+    file_size: '1.6 MB PDF',
+  },
+  {
+    title: 'GIPT 4IR Skills & Research Short Courses Catalogue',
+    category: 'Prospectus',
+    summary: 'Full syllabus guide, cohort schedules, fee structures, and enrolment procedures covering Research Methods, Flagship Mentorship, and 4IR Skills tracks.',
+    file_url: '/api/resources/3/download',
+    publication_year: '2026',
+    file_size: '2.4 MB PDF',
+  },
+  {
+    title: 'Free Information Sessions Series: Research & Technology Topics Schedule',
+    category: 'Brochure',
+    summary: 'Upcoming complimentary online session topics covering research design, reference management, Stata/NVivo orientation, and ethical AI tools for researchers.',
+    file_url: '/api/resources/4/download',
+    publication_year: '2026',
+    file_size: '620 KB PDF',
+  },
+  {
+    title: 'Policy Brief: Accelerating 4IR & Empirical Research Capacity in Southern Africa',
+    category: 'Policy Brief',
+    summary: 'Evidence-based review of practical upskilling models in data science, AI literacy, and structured research mentorship across universities and public agencies.',
+    file_url: '/api/resources/5/download',
+    publication_year: '2026',
+    file_size: '1.3 MB PDF',
+  },
+  {
+    title: 'Working Paper: Ethical AI Adoption & Reproducible Research Workflows',
+    category: 'Research Paper',
+    summary: 'Practical institutional framework for integrating modern computational tools into academic research while safeguarding scholarly integrity.',
+    file_url: '/api/resources/6/download',
+    publication_year: '2026',
+    file_size: '1.8 MB PDF',
+  },
+];
+
+export const INITIAL_INQUIRIES: Omit<Inquiry, 'id' | 'created_at'>[] = [
+  {
+    name: 'Kondwani Banda',
+    email: 'kondwani.banda@gmail.com',
+    phone: '+265 991 774 205',
+    category: 'Flagship Research Mentorship Programme',
+    program_of_interest: 'GIPT Research Mentorship Programme (Flagship)',
+    message: 'I would like to enroll in the Flagship Research Mentorship Programme for structured supervision on my postgraduate proposal, quantitative analysis, and manuscript writing.',
+    status: 'new',
+    admin_notes: '',
+  },
+  {
+    name: 'Chisomo Phiri',
+    email: 'c.phiri@finance.gov.mw',
+    phone: '+265 999 412 880',
+    category: 'Research Methods Short Courses',
+    program_of_interest: 'Quantitative Data Analysis and Visualisation Using Stata',
+    message: 'I would like to register for the 21–25 September Physical Stata workshop in Blantyre (MK550,000) and request an institutional pro-forma invoice.',
+    status: 'in_progress',
+    admin_notes: 'Shared registration form link and Blantyre venue details.',
+  },
+  {
+    name: 'Tadala Mwale',
+    email: 'tmwale@enterprisebank.mw',
+    phone: '+265 888 231 540',
+    category: 'Free Information Sessions (Research & Technology)',
+    program_of_interest: 'Free Information Session: Emerging 4IR Technologies & AI in Modern Research',
+    message: 'Please send the joining link for the next Free Information Session on AI & 4IR tools in research, as well as details for your 4IR Skills corporate cohorts.',
+    status: 'resolved',
+    admin_notes: 'Sent free session Zoom link and 4IR brochure.',
+  },
+];
+
+export const INITIAL_SUBSCRIBERS: Omit<Subscriber, 'id' | 'created_at'>[] = [
+  { email: 'policy.desk@developmentpartner.org' },
+  { email: 'hr.learning@capitalholdings.mw' },
+  { email: 'm.chirwa@researchnetwork.org' },
+  { email: 'digital.ops@enterprise.mw' },
+];
+
+export const INITIAL_SITE_SETTINGS: SiteSettings = {
+  institute_name: 'Global Institute For Postgraduate Training',
+  institute_short_name: 'GIPT',
+  tagline: 'Flagship Research Mentorship, Research Methods Short Courses, 4IR Skills & Free Research-Tech Information Sessions',
+  logo_url: SEED_IMAGES.officialLogo,
+  announcement_enabled: true,
+  announcement_text: 'Now Enrolling: Flagship Research Mentorship Programme, August–September Research Methods Short Courses (MK85,000 Online · MK550,000 Physical), 4IR Skills & Free Info Sessions.',
+  announcement_link_label: 'View Course Calendar',
+  announcement_link_url: '/programs',
+  hero_slides: [
+    {
+      id: 'slide-1',
+      kicker: 'Flagship Programme & Aug–Sept Academic Calendar · Now Enrolling',
+      headline: 'Research Mentorship & Practical Short Courses Built for Scholars and Professionals',
+      subheadline: 'Enroll in our Flagship Research Mentorship Programme or join 11 scheduled Research Methods short courses (Online, Blantyre & Lilongwe) alongside hands-on 4IR Skills training.',
+      image_url: SEED_IMAGES.heroCampus,
+      primary_cta_label: 'Explore Courses & Calendar',
+      primary_cta_link: '/programs',
+      secondary_cta_label: 'View Official Calendar',
+      secondary_cta_link: '/#knowledge-hub',
+    },
+    {
+      id: 'slide-2',
+      kicker: '4IR Skills Academy & Free Research-Technology Sessions',
+      headline: 'Master 4th Industrial Revolution Skills & Join Free Research-Tech Info Sessions',
+      subheadline: 'Build applied capability in data science, AI automation, Stata, NVivo, and Excel—or attend our complimentary open information sessions on emerging research and technology subjects.',
+      image_url: SEED_IMAGES.heroForum,
+      primary_cta_label: 'Join Free Info Session',
+      primary_cta_link: '/programs?level=free_sessions',
+      secondary_cta_label: 'Enroll in Mentorship',
+      secondary_cta_link: '/programs?level=mentorship',
+    },
+  ],
+  impact_stats: [
+    {
+      label: 'Scheduled Research Short Courses',
+      value: '11',
+      context: 'August – September calendar spanning Online (MK85,000) & Physical Blantyre/Lilongwe (MK550,000)',
+    },
+    {
+      label: 'Professionals & Scholars Trained',
+      value: '1,450+',
+      context: 'Across Flagship Research Mentorship, Research Methods, and 4IR Skills cohorts',
+    },
+    {
+      label: 'Free Information Sessions',
+      value: 'Open',
+      context: 'Complimentary live webinars on diverse research methodology and modern technology topics',
+    },
+    {
+      label: 'Mentored Papers & Theses',
+      value: '85+',
+      context: 'Proposals, dissertations, working papers, and policy briefs guided by GIPT mentors',
+    },
+  ],
+  about_overview: 'The Global Institute For Postgraduate Training (GIPT) is an independent training and research mentorship institute advancing applied scholarly and technological capability. GIPT currently runs its Flagship Research Mentorship Programme, scheduled Research Methods short courses (Online and in Blantyre & Lilongwe), 4th Industrial Revolution (4IR) skills short courses, and Free Information Sessions on research and technology—while full Undergraduate and Postgraduate degree programmes remain under institutional development.',
+  about_mandate: 'GIPT’s active mandate is to bridge practical research and digital skill gaps through end-to-end Research Mentorship, intensive Research Methods short courses (Proposal Writing, Quantitative/Qualitative/Mixed Designs, Stata, NVivo, Excel), applied 4IR Skills cohorts, and open-access Free Information Sessions on research and technology.',
+  mission: 'To equip students, researchers, and working professionals through structured research mentorship, practical short-course trainings, 4IR digital skills, and accessible information sessions that elevate scholarly and institutional impact.',
+  vision: 'To be Southern Africa’s trusted institute for postgraduate research mentorship, applied 4IR capability, and future-ready higher education.',
+  core_values: [
+    {
+      title: 'Structured Research Mentorship',
+      description: 'Our Flagship Research Mentorship Programme pairs enrolled students with experienced mentors across every stage of research—from topic selection to publication.',
+    },
+    {
+      title: 'Practical Methods Mastery',
+      description: 'Every short course emphasizes hands-on application in proposal writing, data collection, Stata, NVivo, Excel, and mixed-methods design.',
+    },
+    {
+      title: 'Applied 4IR Readiness',
+      description: 'We equip professionals and scholars with real-world 4th Industrial Revolution fluency in data science, AI literacy, cloud security, and smart systems.',
+    },
+    {
+      title: 'Open Knowledge Access',
+      description: 'Through Free Information Sessions on research and technology, we open doors for emerging scholars and institutions before they commit to full cohorts.',
+    },
+  ],
+  leadership: [
+    {
+      name: 'Prof. Hastings Chikwanda',
+      role: 'Principal & Lead Research Mentor',
+      department: 'Office of the Principal',
+      bio: 'Senior academic leader and quantitative research mentor with over two decades guiding postgraduate proposals, empirical policy studies, and institutional capacity building.',
+    },
+    {
+      name: 'Dr. Grace Nkhoma',
+      role: 'Director, Flagship Research Mentorship & Methods',
+      department: 'Research Mentorship',
+      bio: 'Methodologist overseeing GIPT’s Flagship Research Mentorship Programme, the August–September Research Methods short courses, and future degree accreditation.',
+    },
+    {
+      name: 'Dr. Chimwemwe Phiri',
+      role: 'Head, 4th Industrial Revolution (4IR) Skills Academy',
+      department: '4IR & Technology',
+      bio: 'Applied data scientist and systems architect leading 4IR short courses in machine learning, AI workflow automation, cloud security, and technology info sessions.',
+    },
+    {
+      name: 'Mr. Bernard Kalonga',
+      role: 'Coordinator, Executive Cohorts & Institutional Training',
+      department: 'Blantyre & Lilongwe Workshops',
+      bio: 'Leads delivery of physical intensive workshops in Blantyre and Lilongwe alongside bespoke research and 4IR trainings for ministries, NGOs, and corporate teams.',
+    },
+  ],
+  contact_address: 'GIPT Campus, Lilongwe & Blantyre Training Centres, Malawi (www.gipt.edu.mw)',
+  contact_phone_primary: '+265 885 921 221',
+  contact_phone_secondary: '+265 885 921 221 (WhatsApp & Registration Desk)',
+  contact_email_admissions: 'info@gipt.edu.mw',
+  contact_email_general: 'info@gipt.edu.mw',
+  office_hours: 'Monday – Friday: 08:00 – 17:00 CAT · Online Evening Classes: 18:00 – 20:30 CAT · Physical Workshops: 08:00 – 16:00 CAT',
+  social_linkedin: 'https://linkedin.com',
+  social_twitter: 'https://x.com',
+  social_facebook: 'https://facebook.com',
+  social_youtube: 'https://youtube.com',
+  seo_default_title: 'GIPT — Global Institute For Postgraduate Training | Research Mentorship & Short Courses',
+  seo_default_description: 'Global Institute For Postgraduate Training (GIPT) offers a Flagship Research Mentorship Programme, Research Methods short courses (Stata, NVivo, Excel, Proposal Writing), 4IR Skills trainings, and Free Information Sessions.',
+};
