@@ -175,6 +175,110 @@ export function filterPosts(
   });
 }
 
+export const RESOURCE_HUB_CATEGORIES = [
+  'Session Recordings',
+  'Presentations',
+  'Datasets',
+  'Guides & Toolkits',
+] as const;
+
+const YOUTUBE_ALLOWED_HOSTS = new Set([
+  'youtube.com',
+  'www.youtube.com',
+  'm.youtube.com',
+  'youtu.be',
+  'youtube-nocookie.com',
+  'www.youtube-nocookie.com',
+]);
+
+export function extractYouTubeId(url: string | undefined | null): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return null;
+  }
+
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    return null;
+  }
+
+  const host = parsed.hostname.toLowerCase();
+  if (!YOUTUBE_ALLOWED_HOSTS.has(host)) {
+    return null;
+  }
+
+  let candidate: string | null = null;
+  if (host === 'youtu.be') {
+    candidate = parsed.pathname.replace(/^\/+/, '').split('/')[0] || null;
+  } else {
+    const vParam = parsed.searchParams.get('v');
+    if (vParam) {
+      candidate = vParam;
+    } else {
+      const pathMatch = /^\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]{11})(?:[/?#]|$)/.exec(
+        parsed.pathname
+      );
+      if (pathMatch) {
+        candidate = pathMatch[1];
+      }
+    }
+  }
+
+  if (!candidate || !/^[A-Za-z0-9_-]{11}$/.test(candidate)) {
+    return null;
+  }
+  return candidate;
+}
+
+export function getYouTubeThumbnailUrl(videoId: string): string {
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+}
+
+export function getYouTubeEmbedUrl(videoId: string): string {
+  return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+}
+
+export function getResourceYouTubeId(
+  resource: Pick<Resource, 'youtube_url' | 'file_url'>
+): string | null {
+  return extractYouTubeId(resource.youtube_url) || extractYouTubeId(resource.file_url);
+}
+
+export function hasDownloadableFile(resource: Pick<Resource, 'file_url'>): boolean {
+  const safe = sanitizeUrl(resource.file_url);
+  if (!safe) return false;
+  return extractYouTubeId(safe) === null;
+}
+
+export function getResourceFileLabel(
+  resource: Pick<Resource, 'file_url' | 'file_size'>
+): string {
+  const sizeText = (resource.file_size || '').trim();
+  if (sizeText) return sizeText;
+  const lowerUrl = (resource.file_url || '').toLowerCase();
+  if (lowerUrl.endsWith('.pptx')) return 'PPTX Slides';
+  if (lowerUrl.endsWith('.xlsx')) return 'XLSX Dataset';
+  if (lowerUrl.endsWith('.csv')) return 'CSV Dataset';
+  if (lowerUrl.endsWith('.zip')) return 'ZIP Toolkit';
+  if (lowerUrl.endsWith('.pdf')) return 'PDF Handout';
+  if (/\.(jpg|jpeg|png|webp)$/.test(lowerUrl)) return 'Image Poster';
+  return 'Resource File';
+}
+
+const LEGACY_GUIDE_CATEGORIES = new Set([
+  'prospectus',
+  'academic calendar',
+  'academic guide',
+  'policy brief',
+  'research paper',
+  'brochure',
+]);
+
 export function filterResources(
   resources: Resource[],
   options: { query?: string; category?: string }
@@ -183,9 +287,18 @@ export function filterResources(
   const cat = (options.category || 'all').toLowerCase();
 
   return resources.filter((r) => {
-    if (cat !== 'all' && r.category.toLowerCase() !== cat) return false;
+    if (cat !== 'all') {
+      const rCat = r.category.toLowerCase();
+      if (cat === 'guides & toolkits') {
+        if (rCat !== cat && !LEGACY_GUIDE_CATEGORIES.has(rCat)) return false;
+      } else if (cat === 'session recordings') {
+        if (rCat !== cat && !getResourceYouTubeId(r)) return false;
+      } else if (rCat !== cat) {
+        return false;
+      }
+    }
     if (q) {
-      const hay = `${r.title} ${r.category} ${r.summary} ${r.publication_year}`.toLowerCase();
+      const hay = `${r.title} ${r.category} ${r.summary} ${r.publication_year} ${r.file_size}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;

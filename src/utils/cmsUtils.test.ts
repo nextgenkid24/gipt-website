@@ -7,11 +7,16 @@ import {
   sanitizeUrl,
   filterPrograms,
   filterPosts,
+  filterResources,
+  extractYouTubeId,
+  getResourceYouTubeId,
+  hasDownloadableFile,
+  getResourceFileLabel,
   parseMarkdownBlocks,
   parseInlineMarkdown,
   isValidEmail,
 } from './cmsUtils';
-import type { Post, Program } from '../types';
+import type { Post, Program, Resource } from '../types';
 
 test('slugify generates clean SEO slugs', () => {
   assert.equal(slugify('Advancing Public Sector Finance in Southern Africa!'), 'advancing-public-sector-finance-in-southern-africa');
@@ -179,3 +184,75 @@ test('isValidEmail validates common email formats', () => {
   assert.equal(isValidEmail('student@gipt.edu.mw'), true);
   assert.equal(isValidEmail('invalid-email'), false);
 });
+
+test('extractYouTubeId parses valid YouTube formats and rejects untrusted hosts/schemes', () => {
+  assert.equal(extractYouTubeId('https://www.youtube.com/watch?v=eIho2S0ZahI'), 'eIho2S0ZahI');
+  assert.equal(extractYouTubeId('https://youtu.be/r-uOLxNrNk8?t=42'), 'r-uOLxNrNk8');
+  assert.equal(extractYouTubeId('https://www.youtube.com/live/aircAruvnKk'), 'aircAruvnKk');
+  assert.equal(extractYouTubeId('https://www.youtube-nocookie.com/embed/eIho2S0ZahI'), 'eIho2S0ZahI');
+  assert.equal(extractYouTubeId('https://evil.example/watch?v=eIho2S0ZahI'), null);
+  assert.equal(extractYouTubeId('javascript:alert(1)'), null);
+  assert.equal(extractYouTubeId('https://www.youtube.com/watch?v=short'), null);
+});
+
+test('resource helpers detect video vs downloadable file and filter Resource Hub categories cleanly', () => {
+  const sample: Resource[] = [
+    {
+      id: 1,
+      title: 'Stata Live Session',
+      category: 'Session Recordings',
+      summary: 'Hands-on Stata workshop recording',
+      file_url: '/uploads/stata-slides.pptx',
+      youtube_url: 'https://youtu.be/r-uOLxNrNk8',
+      publication_year: 'Sept 2026 · 1h 14m',
+      file_size: '',
+      created_at: '2026-08-01',
+    },
+    {
+      id: 2,
+      title: 'YouTube-only via file_url',
+      category: 'Session Recordings',
+      summary: 'Legacy video pasted into file_url',
+      file_url: 'https://www.youtube.com/watch?v=eIho2S0ZahI',
+      youtube_url: '',
+      publication_year: 'Aug 2026',
+      file_size: 'HD Video',
+      created_at: '2026-08-01',
+    },
+    {
+      id: 3,
+      title: 'Household Survey CSV',
+      category: 'Datasets',
+      summary: 'Practice dataset for quantitative modules',
+      file_url: '/uploads/household.csv',
+      youtube_url: '',
+      publication_year: '2026',
+      file_size: 'CSV Dataset · 840 KB',
+      created_at: '2026-08-01',
+    },
+    {
+      id: 4,
+      title: 'Legacy Academic Calendar',
+      category: 'Academic Calendar',
+      summary: 'Existing production guide entry',
+      file_url: '/assets/calendar.jpg',
+      youtube_url: '',
+      publication_year: '2026',
+      file_size: 'Official Poster JPG',
+      created_at: '2026-08-01',
+    },
+  ];
+
+  assert.equal(getResourceYouTubeId(sample[0]), 'r-uOLxNrNk8');
+  assert.equal(hasDownloadableFile(sample[0]), true);
+  assert.equal(getResourceFileLabel(sample[0]), 'PPTX Slides');
+
+  assert.equal(getResourceYouTubeId(sample[1]), 'eIho2S0ZahI');
+  assert.equal(hasDownloadableFile(sample[1]), false);
+
+  assert.equal(filterResources(sample, { category: 'Session Recordings' }).length, 2);
+  assert.equal(filterResources(sample, { category: 'Datasets' }).length, 1);
+  assert.equal(filterResources(sample, { category: 'Guides & Toolkits' }).length, 1);
+  assert.equal(filterResources(sample, { query: 'stata' }).length, 1);
+});
+

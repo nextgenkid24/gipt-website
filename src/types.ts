@@ -65,9 +65,10 @@ export interface Program {
 export interface Resource {
   id: number;
   title: string;
-  category: string; // Prospectus, Academic Calendar, Policy Brief, Research Paper, Brochure
+  category: string; // Session Recordings, Presentations, Datasets, Guides & Toolkits
   summary: string;
   file_url: string;
+  youtube_url?: string;
   publication_year: string;
   file_size: string;
   created_at: string;

@@ -30,7 +30,7 @@ const ADMIN_NAV: NavItem[] = [
   { label: 'Posts & Insights', to: '/admin/posts', icon: FileText },
   { label: 'Categories', to: '/admin/categories', icon: FolderTree, superAdminOnly: true },
   { label: 'Programs & Trainings', to: '/admin/programs', icon: GraduationCap, superAdminOnly: true },
-  { label: 'Publications Hub', to: '/admin/resources', icon: BookOpen, superAdminOnly: true },
+  { label: 'Sessions & Resources', to: '/admin/resources', icon: BookOpen, superAdminOnly: true },
   { label: 'Inquiries & Subscribers', to: '/admin/inbox', icon: Inbox, superAdminOnly: true },
   { label: 'Authors & Users', to: '/admin/users', icon: Users, superAdminOnly: true },
   { label: 'Site Settings', to: '/admin/settings', icon: Settings, superAdminOnly: true },

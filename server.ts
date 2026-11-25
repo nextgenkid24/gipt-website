@@ -30,31 +30,52 @@ if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-const ALLOWED_UPLOAD_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf']);
-const ALLOWED_UPLOAD_MIMES = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'application/pdf',
-]);
+const ALLOWED_UPLOAD_MIME_MAP: Record<string, Set<string>> = {
+  '.jpg': new Set(['image/jpeg']),
+  '.jpeg': new Set(['image/jpeg']),
+  '.png': new Set(['image/png']),
+  '.webp': new Set(['image/webp']),
+  '.pdf': new Set(['application/pdf']),
+  '.pptx': new Set([
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/zip',
+    'application/x-zip-compressed',
+    'application/octet-stream',
+  ]),
+  '.xlsx': new Set([
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/zip',
+    'application/x-zip-compressed',
+    'application/octet-stream',
+  ]),
+  '.csv': new Set(['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel']),
+  '.zip': new Set(['application/zip', 'application/x-zip-compressed', 'multipart/x-zip']),
+};
 
 const upload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
     filename: (_req, file, cb) => {
       const ext = path.extname(file.originalname).toLowerCase();
-      const safeExt = ALLOWED_UPLOAD_EXTS.has(ext) ? ext : '.bin';
+      const safeExt = Object.prototype.hasOwnProperty.call(ALLOWED_UPLOAD_MIME_MAP, ext)
+        ? ext
+        : '.bin';
       const token = crypto.randomBytes(8).toString('hex');
       cb(null, `${Date.now()}-${token}${safeExt}`);
     },
   }),
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (ALLOWED_UPLOAD_EXTS.has(ext) && ALLOWED_UPLOAD_MIMES.has(file.mimetype)) {
+    const allowedMimes = ALLOWED_UPLOAD_MIME_MAP[ext];
+    if (allowedMimes && allowedMimes.has(file.mimetype.toLowerCase())) {
       cb(null, true);
     } else {
-      cb(new Error('Only JPG, PNG, WebP images and PDF files are permitted.'));
+      cb(
+        new Error(
+          'Only JPG, PNG, WebP, PDF, PPTX, XLSX, CSV, and ZIP files are permitted.'
+        )
+      );
     }
   },
 });
@@ -653,7 +674,7 @@ async function startServer() {
     const title = String(req.body?.title || '').trim();
     const category = String(req.body?.category || '').trim();
     if (title.length < 3 || !category) {
-      res.status(400).json({ error: 'Publication title and category are required.' });
+      res.status(400).json({ error: 'Resource title and category are required.' });
       return;
     }
     const created = await store.createResource({
@@ -661,8 +682,9 @@ async function startServer() {
       category,
       summary: String(req.body?.summary || '').trim(),
       file_url: sanitizeUrl(String(req.body?.file_url || '')),
+      youtube_url: sanitizeUrl(String(req.body?.youtube_url || '')),
       publication_year: String(req.body?.publication_year || new Date().getFullYear()).trim(),
-      file_size: String(req.body?.file_size || '1.0 MB PDF').trim(),
+      file_size: String(req.body?.file_size || '').trim(),
     });
     res.status(201).json(created);
   });
@@ -675,6 +697,10 @@ async function startServer() {
       summary: req.body?.summary !== undefined ? String(req.body.summary).trim() : undefined,
       file_url:
         req.body?.file_url !== undefined ? sanitizeUrl(String(req.body.file_url)) : undefined,
+      youtube_url:
+        req.body?.youtube_url !== undefined
+          ? sanitizeUrl(String(req.body.youtube_url))
+          : undefined,
       publication_year:
         req.body?.publication_year !== undefined
           ? String(req.body.publication_year).trim()

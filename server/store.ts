@@ -529,10 +529,13 @@ class MemoryStore implements DataStore {
 
   async createResource(data: Omit<Resource, 'id' | 'created_at'>): Promise<Resource> {
     const id = this.seq.resources++;
+    const youtubeUrl = data.youtube_url || '';
+    const fileUrl = data.file_url || (!youtubeUrl ? `/api/resources/${id}/download` : '');
     const item: Resource = {
       id,
       ...data,
-      file_url: data.file_url || `/api/resources/${id}/download`,
+      file_url: fileUrl,
+      youtube_url: youtubeUrl,
       created_at: new Date().toISOString(),
     };
     this.resources.push(item);
@@ -735,12 +738,23 @@ class MySQLStore implements DataStore {
         title VARCHAR(255) NOT NULL,
         category VARCHAR(120) NOT NULL,
         summary TEXT NOT NULL,
-        file_url VARCHAR(500) NOT NULL,
-        publication_year VARCHAR(20) NOT NULL DEFAULT '2026',
-        file_size VARCHAR(60) NOT NULL DEFAULT '1.0 MB PDF',
+        file_url VARCHAR(500) NOT NULL DEFAULT '',
+        youtube_url VARCHAR(500) NOT NULL DEFAULT '',
+        publication_year VARCHAR(60) NOT NULL DEFAULT '2026',
+        file_size VARCHAR(80) NOT NULL DEFAULT '1.0 MB PDF',
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    const [ytColRows] = await this.pool.query<RowDataPacket[]>(
+      `SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'resources' AND COLUMN_NAME = 'youtube_url'`
+    );
+    if (Number(ytColRows[0]?.cnt || 0) === 0) {
+      await this.pool.query(
+        "ALTER TABLE resources ADD COLUMN youtube_url VARCHAR(500) DEFAULT '' AFTER file_url"
+      );
+    }
 
     await this.pool.query(`
       CREATE TABLE IF NOT EXISTS inquiries (
@@ -847,9 +861,9 @@ class MySQLStore implements DataStore {
     if (Number(resRows[0]?.cnt || 0) === 0) {
       for (const r of INITIAL_RESOURCES) {
         await this.pool.query(
-          `INSERT INTO resources (title, category, summary, file_url, publication_year, file_size)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [r.title, r.category, r.summary, r.file_url, r.publication_year, r.file_size]
+          `INSERT INTO resources (title, category, summary, file_url, youtube_url, publication_year, file_size)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [r.title, r.category, r.summary, r.file_url, r.youtube_url || '', r.publication_year, r.file_size]
         );
       }
     }
@@ -1347,13 +1361,14 @@ class MySQLStore implements DataStore {
   }
 
   async listResources(): Promise<Resource[]> {
-    const [rows] = await this.pool.query<RowDataPacket[]>('SELECT * FROM resources ORDER BY id DESC');
+    const [rows] = await this.pool.query<RowDataPacket[]>('SELECT * FROM resources ORDER BY id ASC');
     return rows.map((r) => ({
       id: Number(r.id),
       title: String(r.title),
       category: String(r.category),
       summary: String(r.summary),
-      file_url: String(r.file_url),
+      file_url: String(r.file_url || ''),
+      youtube_url: String(r.youtube_url || ''),
       publication_year: String(r.publication_year),
       file_size: String(r.file_size),
       created_at: new Date(r.created_at).toISOString(),
@@ -1369,7 +1384,8 @@ class MySQLStore implements DataStore {
       title: String(r.title),
       category: String(r.category),
       summary: String(r.summary),
-      file_url: String(r.file_url),
+      file_url: String(r.file_url || ''),
+      youtube_url: String(r.youtube_url || ''),
       publication_year: String(r.publication_year),
       file_size: String(r.file_size),
       created_at: new Date(r.created_at).toISOString(),
@@ -1377,11 +1393,13 @@ class MySQLStore implements DataStore {
   }
 
   async createResource(data: Omit<Resource, 'id' | 'created_at'>): Promise<Resource> {
+    const youtubeUrl = data.youtube_url || '';
+    const fileUrl = data.file_url || '';
     const [res] = await this.pool.query<ResultSetHeader>(
-      'INSERT INTO resources (title, category, summary, file_url, publication_year, file_size) VALUES (?, ?, ?, ?, ?, ?)',
-      [data.title, data.category, data.summary, data.file_url || '', data.publication_year, data.file_size]
+      'INSERT INTO resources (title, category, summary, file_url, youtube_url, publication_year, file_size) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [data.title, data.category, data.summary, fileUrl, youtubeUrl, data.publication_year, data.file_size]
     );
-    if (!data.file_url) {
+    if (!fileUrl && !youtubeUrl) {
       await this.pool.query('UPDATE resources SET file_url = ? WHERE id = ?', [
         `/api/resources/${res.insertId}/download`,
         res.insertId,
@@ -1400,6 +1418,7 @@ class MySQLStore implements DataStore {
     if (data.category !== undefined) { fields.push('category = ?'); values.push(data.category); }
     if (data.summary !== undefined) { fields.push('summary = ?'); values.push(data.summary); }
     if (data.file_url !== undefined) { fields.push('file_url = ?'); values.push(data.file_url); }
+    if (data.youtube_url !== undefined) { fields.push('youtube_url = ?'); values.push(data.youtube_url); }
     if (data.publication_year !== undefined) { fields.push('publication_year = ?'); values.push(data.publication_year); }
     if (data.file_size !== undefined) { fields.push('file_size = ?'); values.push(data.file_size); }
     if (fields.length > 0) {

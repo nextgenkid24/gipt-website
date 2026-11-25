@@ -109,9 +109,45 @@ final class GiptRepository
             $this->createSqliteTables();
         }
 
+        $this->ensureResourcesYoutubeColumn();
+
         $userCount = (int) $this->pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
         if ($userCount === 0) {
             $this->seedInitialData();
+        }
+    }
+
+    /**
+     * Safely adds `youtube_url` to existing `resources` tables without breaking production data.
+     */
+    private function ensureResourcesYoutubeColumn(): void
+    {
+        if ($this->driver === 'mysql') {
+            $stmt = $this->pdo->prepare(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS
+                 WHERE TABLE_SCHEMA = DATABASE()
+                   AND TABLE_NAME = 'resources'
+                   AND COLUMN_NAME = 'youtube_url'"
+            );
+            $stmt->execute();
+            if ((int) $stmt->fetchColumn() === 0) {
+                $this->pdo->exec(
+                    "ALTER TABLE resources ADD COLUMN youtube_url VARCHAR(500) DEFAULT '' AFTER file_url"
+                );
+            }
+            return;
+        }
+
+        $cols = $this->pdo->query('PRAGMA table_info(resources)')->fetchAll();
+        $hasYoutube = false;
+        foreach ($cols as $col) {
+            if (($col['name'] ?? '') === 'youtube_url') {
+                $hasYoutube = true;
+                break;
+            }
+        }
+        if (!$hasYoutube) {
+            $this->pdo->exec("ALTER TABLE resources ADD COLUMN youtube_url TEXT DEFAULT ''");
         }
     }
 
@@ -178,9 +214,10 @@ final class GiptRepository
                 title VARCHAR(255) NOT NULL,
                 category VARCHAR(100) NOT NULL,
                 summary TEXT,
-                file_url VARCHAR(500) NOT NULL,
-                publication_year VARCHAR(16) DEFAULT '2026',
-                file_size VARCHAR(60) DEFAULT '1.2 MB PDF',
+                file_url VARCHAR(500) NOT NULL DEFAULT '',
+                youtube_url VARCHAR(500) DEFAULT '',
+                publication_year VARCHAR(60) DEFAULT '2026',
+                file_size VARCHAR(80) DEFAULT '1.2 MB PDF',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
 
@@ -272,7 +309,8 @@ final class GiptRepository
                 title TEXT NOT NULL,
                 category TEXT NOT NULL,
                 summary TEXT DEFAULT '',
-                file_url TEXT NOT NULL,
+                file_url TEXT NOT NULL DEFAULT '',
+                youtube_url TEXT DEFAULT '',
                 publication_year TEXT DEFAULT '2026',
                 file_size TEXT DEFAULT '1.2 MB PDF',
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -399,7 +437,7 @@ final class GiptRepository
 
         // 5. Seed Resources
         $resStmt = $this->pdo->prepare(
-            'INSERT INTO resources (title, category, summary, file_url, publication_year, file_size) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO resources (title, category, summary, file_url, youtube_url, publication_year, file_size) VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         foreach ($seed['resources'] as $r) {
             $resStmt->execute([
@@ -407,6 +445,7 @@ final class GiptRepository
                 $r['category'],
                 $r['summary'],
                 $r['file_url'],
+                $r['youtube_url'] ?? '',
                 $r['publication_year'],
                 $r['file_size'],
             ]);
@@ -937,19 +976,22 @@ final class GiptRepository
      */
     public function createResource(array $data): array
     {
+        $youtubeUrl = (string) ($data['youtube_url'] ?? '');
+        $fileUrl = (string) ($data['file_url'] ?? '');
         $stmt = $this->pdo->prepare(
-            'INSERT INTO resources (title, category, summary, file_url, publication_year, file_size) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO resources (title, category, summary, file_url, youtube_url, publication_year, file_size) VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $data['title'],
             $data['category'],
             $data['summary'],
-            $data['file_url'],
+            $fileUrl,
+            $youtubeUrl,
             $data['publication_year'],
             $data['file_size'],
         ]);
         $id = (int) $this->pdo->lastInsertId();
-        if ($data['file_url'] === '') {
+        if ($fileUrl === '' && $youtubeUrl === '') {
             $upd = $this->pdo->prepare('UPDATE resources SET file_url = ? WHERE id = ?');
             $upd->execute(["/api/resources/$id/download", $id]);
         }
@@ -967,13 +1009,14 @@ final class GiptRepository
             return null;
         }
         $stmt = $this->pdo->prepare(
-            'UPDATE resources SET title = ?, category = ?, summary = ?, file_url = ?, publication_year = ?, file_size = ? WHERE id = ?'
+            'UPDATE resources SET title = ?, category = ?, summary = ?, file_url = ?, youtube_url = ?, publication_year = ?, file_size = ? WHERE id = ?'
         );
         $stmt->execute([
             $data['title'] ?? $existing['title'],
             $data['category'] ?? $existing['category'],
             $data['summary'] ?? $existing['summary'],
             $data['file_url'] ?? $existing['file_url'],
+            $data['youtube_url'] ?? ($existing['youtube_url'] ?? ''),
             $data['publication_year'] ?? $existing['publication_year'],
             $data['file_size'] ?? $existing['file_size'],
             $id,
@@ -996,7 +1039,8 @@ final class GiptRepository
             'title' => (string) $r['title'],
             'category' => (string) $r['category'],
             'summary' => (string) ($r['summary'] ?? ''),
-            'file_url' => (string) $r['file_url'],
+            'file_url' => (string) ($r['file_url'] ?? ''),
+            'youtube_url' => (string) ($r['youtube_url'] ?? ''),
             'publication_year' => (string) ($r['publication_year'] ?? '2026'),
             'file_size' => (string) ($r['file_size'] ?? ''),
             'created_at' => $this->toIso((string) ($r['created_at'] ?? '')),

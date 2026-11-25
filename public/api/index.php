@@ -398,7 +398,7 @@ HTML;
         $uploadError = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
         if ($uploadError !== UPLOAD_ERR_OK) {
             $errMsg = match ($uploadError) {
-                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'File exceeds maximum allowed size of 10 MB.',
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'File exceeds maximum allowed size of 20 MB.',
                 UPLOAD_ERR_NO_FILE => 'No file provided.',
                 default => 'File upload failed. Please try again.',
             };
@@ -413,8 +413,8 @@ HTML;
             gipt_error('Invalid file upload.', 400);
         }
 
-        if ($sizeBytes <= 0 || $sizeBytes > 10 * 1024 * 1024) {
-            gipt_error('File must be between 1 byte and 10 MB.', 400);
+        if ($sizeBytes <= 0 || $sizeBytes > 20 * 1024 * 1024) {
+            gipt_error('File must be between 1 byte and 20 MB.', 400);
         }
 
         $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
@@ -424,10 +424,33 @@ HTML;
             'png' => ['image/png'],
             'webp' => ['image/webp'],
             'pdf' => ['application/pdf'],
+            'pptx' => [
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/zip',
+                'application/x-zip-compressed',
+                'application/octet-stream',
+            ],
+            'xlsx' => [
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/zip',
+                'application/x-zip-compressed',
+                'application/octet-stream',
+            ],
+            'csv' => [
+                'text/csv',
+                'text/plain',
+                'application/csv',
+                'application/vnd.ms-excel',
+            ],
+            'zip' => [
+                'application/zip',
+                'application/x-zip-compressed',
+                'multipart/x-zip',
+            ],
         ];
 
         if (!isset($allowedMap[$ext])) {
-            gipt_error('Only JPG, PNG, WebP images and PDF files are permitted.', 400);
+            gipt_error('Only JPG, PNG, WebP, PDF, PPTX, XLSX, CSV, and ZIP files are permitted.', 400);
         }
 
         // Verify actual file content MIME type via finfo (not trusting client Content-Type)
@@ -447,7 +470,7 @@ HTML;
         }
 
         if (!in_array($detectedMime, $allowedMap[$ext], true)) {
-            gipt_error('Uploaded file content does not match an allowed JPG, PNG, WebP, or PDF format.', 400);
+            gipt_error('Uploaded file content does not match an allowed image, PDF, PPTX, XLSX, CSV, or ZIP format.', 400);
         }
 
         $uploadsBase = __DIR__ . '/../uploads';
@@ -775,8 +798,9 @@ HTML;
             'category' => $category,
             'summary' => trim((string) ($body['summary'] ?? '')),
             'file_url' => gipt_sanitize_url((string) ($body['file_url'] ?? '')),
+            'youtube_url' => gipt_sanitize_url((string) ($body['youtube_url'] ?? '')),
             'publication_year' => trim((string) ($body['publication_year'] ?? date('Y'))),
-            'file_size' => trim((string) ($body['file_size'] ?? '1.0 MB PDF')),
+            'file_size' => trim((string) ($body['file_size'] ?? '')),
         ]);
         gipt_json($created, 201);
     }
@@ -795,6 +819,9 @@ HTML;
         }
         if (array_key_exists('file_url', $body)) {
             $updateData['file_url'] = gipt_sanitize_url((string) $body['file_url']);
+        }
+        if (array_key_exists('youtube_url', $body)) {
+            $updateData['youtube_url'] = gipt_sanitize_url((string) $body['youtube_url']);
         }
 
         $updated = $repo->updateResource($id, $updateData);
